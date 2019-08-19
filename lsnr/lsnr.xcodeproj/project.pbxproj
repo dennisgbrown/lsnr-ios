@@ -47,6 +47,7 @@
 		9523F4992307824B006114FC /* lsnrUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = lsnrUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9523F49D2307824B006114FC /* lsnrUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = lsnrUITests.swift; sourceTree = "<group>"; };
 		9523F49F2307824B006114FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		95A24E0D230A470100197AF8 /* lsnr.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = lsnr.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +82,7 @@
 				9523F4912307824B006114FC /* lsnrTests */,
 				9523F49C2307824B006114FC /* lsnrUITests */,
 				9523F47B2307824A006114FC /* Products */,
+				95A24E0A230A467800197AF8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,6 +99,7 @@
 		9523F47C2307824A006114FC /* lsnr */ = {
 			isa = PBXGroup;
 			children = (
+				95A24E0D230A470100197AF8 /* lsnr.entitlements */,
 				9523F47D2307824A006114FC /* AppDelegate.swift */,
 				9523F47F2307824A006114FC /* ViewController.swift */,
 				9523F4812307824A006114FC /* Main.storyboard */,
@@ -123,6 +126,13 @@
 				9523F49F2307824B006114FC /* Info.plist */,
 			);
 			path = lsnrUITests;
+			sourceTree = "<group>";
+		};
+		95A24E0A230A467800197AF8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,6 +203,17 @@
 				TargetAttributes = {
 					9523F4792307824A006114FC = {
 						CreatedOnToolsVersion = 10.3;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 0;
+							};
+							com.apple.DataProtection = {
+								enabled = 0;
+							};
+							com.apple.Maps.iOS = {
+								enabled = 0;
+							};
+						};
 					};
 					9523F48D2307824B006114FC = {
 						CreatedOnToolsVersion = 10.3;
@@ -433,6 +454,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = UF4NY89U8X;
 				INFOPLIST_FILE = lsnr/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -450,6 +472,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = UF4NY89U8X;
 				INFOPLIST_FILE = lsnr/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
