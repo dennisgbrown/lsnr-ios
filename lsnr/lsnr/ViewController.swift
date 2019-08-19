@@ -25,14 +25,31 @@ class ViewController: UIViewController {
     
     private var mic: AVAudioInputNode!
     
+    private var renderer: UIGraphicsImageRenderer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "lsnr"
+
+        // Set up the waveform renderer
+        let width = 280
+        let height = 250
+        renderer = UIGraphicsImageRenderer(size: CGSize(width: width, height: height))
+        let img = renderer.image { ctx in
+/*            ctx.cgContext.move(to: CGPoint(x: 0, y: 0))
+            ctx.cgContext.addLine(to: CGPoint(x: 0, y: 0))
+            ctx.cgContext.setLineWidth(1)
+*/
+            ctx.cgContext.setStrokeColor(UIColor.black.cgColor)
+            ctx.cgContext.strokePath()
+        }
+        waveView.image = img
+        print("image width: ", waveView.image!.size.width)
+        print("image height: ", waveView.image!.size.height)
         
+        // Check for audio recording permission but just continue on anyway for now
         var isAudioRecordingGranted = false;
-        
         AVAudioSession.sharedInstance().requestRecordPermission({ (allowed) in
             if allowed {
                 isAudioRecordingGranted = true
@@ -40,35 +57,35 @@ class ViewController: UIViewController {
                 isAudioRecordingGranted = false
             }
         })
-        
         print("Can listen? ", isAudioRecordingGranted)
-        
+
+        // Create the audio engine and initialize mic
         do {
             try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch { }
         audioEngine = AVAudioEngine()
         mic = audioEngine.inputNode
-        
         print("Number of inputs: ", mic.numberOfInputs)
         
         // This use of AVAudioEngine & mic tap inspired by https://stackoverflow.com/questions/30957434/how-to-capture-audio-samples-in-ios-with-swift
         // More on completion handlers: https://blog.bobthedeveloper.io/completion-handlers-in-swift-with-bob-6a2a1a854dc4
         
-        // Install mic tap completion handler
+        // Install mic tap completion handler to draw the audio buffer
         print("Installing mic tap")
         let micFormat = mic.inputFormat(forBus: 0)
         mic.installTap(onBus: 0, bufferSize: 2048, format: micFormat) { (buffer, when) in
-            let sampleData = UnsafeBufferPointer(start: buffer.floatChannelData![0], count: Int(buffer.frameLength))
-            print(sampleData.count)
-            for crud in sampleData {
-                print(". ", crud)
+            DispatchQueue.main.async {
+                // Draw the current audio buffer
+                self.drawWaveform(buffer: buffer)
             }
+            //print(sampleData.count)
+            //for crud in sampleData {
+            //    print(". ", crud)
+            //}
         }
         
-        
-        // for example of timers and AVAudioRecorder (which does not seem to allow access to raw inputs), see https://stackoverflow.com/questions/31230854/ios-detect-blow-into-mic-and-convert-the-results-swift
-        
+        // Personal note: for example of timers and AVAudioRecorder (which does not seem to allow access to raw inputs), see https://stackoverflow.com/questions/31230854/ios-detect-blow-into-mic-and-convert-the-results-swift
         
         statusLabel.text = "Press START to listen"
     }
@@ -88,9 +105,33 @@ class ViewController: UIViewController {
     
     @IBAction func stopListening(_ sender: Any) {
         statusLabel.text = "Press START to listen"
-
+        
         print("Stopping audio engine")
         audioEngine.stop()
+    }
+    
+    
+    func drawWaveform(buffer: AVAudioPCMBuffer) {
+        print("Buffer length: ", buffer.frameLength)
+        
+        let width = waveView.image!.size.width
+        let height = waveView.image!.size.height
+        
+        let audioData = Array(UnsafeBufferPointer(start: buffer.floatChannelData?[0], count:Int(buffer.frameLength)))
+        
+        let img = renderer.image { ctx in
+            for i in 1...Int(width) {
+                //print("Data[ ", i, "]: ", audioData[i]);
+                ctx.cgContext.move(to: CGPoint(x: CGFloat(i), y: (height / 2)))
+                let drawHeight = CGFloat((height / 2) + CGFloat(((height / 2) * CGFloat(audioData[i]))))
+                ctx.cgContext.addLine(to: CGPoint(x: CGFloat(i), y: drawHeight))
+                ctx.cgContext.setLineWidth(1)
+                ctx.cgContext.setStrokeColor(UIColor.black.cgColor)
+                ctx.cgContext.strokePath()
+            }
+        }
+        
+        waveView.image = img
     }
 }
 
